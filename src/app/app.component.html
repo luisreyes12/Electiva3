@@ -1,0 +1,55 @@
+<table mat-table [dataSource]="datos" class="mat-elevation-z8" #tabla1>
+
+  <ng-container matColumnDef="codigo">
+    <th mat-header-cell *matHeaderCellDef> Código </th>
+    <td mat-cell *matCellDef="let personaje"> {{personaje.codigo}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef> Nombre </th>
+    <td mat-cell *matCellDef="let personaje"> {{personaje.nombre}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="poder">
+    <th mat-header-cell *matHeaderCellDef> Poder </th>
+    <td mat-cell *matCellDef="let personaje"> {{personaje.poder}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="borrar">
+    <th mat-header-cell *matHeaderCellDef> Borra? </th>
+    <td mat-cell *matCellDef="let j = index;">
+      <button mat-raised-button color="warn" focusable="false" (click)="borrarFila(j)">
+        Borra?
+      </button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="seleccionar">
+    <th mat-header-cell *matHeaderCellDef> Seleccionar </th>
+    <td mat-cell *matCellDef="let j = index;">
+      <button mat-raised-button color="warn" focusable="false" (click)="seleccionar(j)">
+        Seleccionar
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+  <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+</table>
+<div class="contenedor">
+
+  <mat-form-field>
+    <input matInput [(ngModel)]="articuloselect.codigo" type="number" placeholder="Ingrese código">
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput [(ngModel)]="articuloselect.nombre" type="text" placeholder="Ingrese nombre del personaje">
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput [(ngModel)]="articuloselect.poder" type="text" placeholder="Ingrese el poder del personaje">
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+
+</div>
