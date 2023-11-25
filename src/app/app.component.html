@@ -1,8 +1,8 @@
-<table mat-table [dataSource]="datos" class="mat-elevation-z8" #tabla1>
+<table mat-table [dataSource]="personajes" class="mat-elevation-z8" #tabla1>
 
-  <ng-container matColumnDef="codigo">
-    <th mat-header-cell *matHeaderCellDef> Código </th>
-    <td mat-cell *matCellDef="let personaje"> {{personaje.codigo}} </td>
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> Codigo </th>
+    <td mat-cell *matCellDef="let personaje"> {{personaje.id}} </td>
   </ng-container>
 
   <ng-container matColumnDef="nombre">
@@ -38,18 +38,22 @@
 </table>
 <div class="contenedor">
 
-  <mat-form-field>
-    <input matInput [(ngModel)]="articuloselect.codigo" type="number" placeholder="Ingrese código">
+  <mat-form-field *ngIf="isEdit">
+    <input matInput [(ngModel)]="personajeSelect.id" type="number" placeholder="Ingrese código" readonly>
   </mat-form-field>
 
   <mat-form-field>
-    <input matInput [(ngModel)]="articuloselect.nombre" type="text" placeholder="Ingrese nombre del personaje">
+    <input matInput [(ngModel)]="personajeSelect.nombre" type="text" placeholder="Ingrese nombre del personaje">
   </mat-form-field>
 
   <mat-form-field>
-    <input matInput [(ngModel)]="articuloselect.poder" type="text" placeholder="Ingrese el poder del personaje">
+    <input matInput [(ngModel)]="personajeSelect.poder" type="text" placeholder="Ingrese el poder del personaje">
   </mat-form-field>
 
-  <button mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+  <button *ngIf="!isEdit" mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+  <button *ngIf="isEdit" mat-raised-button color="primary" (click)="modificar()">Editar</button>
+
+
+  <button mat-raised-button color="secondary" (click)="reset()" style="margin-top: 12px;">Cancelar</button>
 
 </div>

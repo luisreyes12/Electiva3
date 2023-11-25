@@ -1,73 +1,96 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTable } from '@angular/material/table';
+import { Personaje } from './personaje';
+import { AppService } from './app.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  columnas: string[] = ['codigo', 'nombre', 'poder', 'borrar', 'seleccionar'];
-
-  datos: Personaje[] = [new Personaje(1, 'krilin', 'volar' ),
-  new Personaje(2, 'Goku', 'teletransportarse'),
-  new Personaje(3, 'Vegeta', 'revivir'),
-  ];
-
-  articuloselect: Personaje = new Personaje(0, "", "");
+export class AppComponent implements OnInit {
 
   @ViewChild(MatTable) tabla1!: MatTable<Personaje>;
+  columnas: string[] = ['id', 'nombre', 'poder', 'borrar', 'seleccionar'];
 
-  borrarFila(cod: number) {
+  personajes: Personaje[];
+  personajeSelect: Personaje = { nombre : '' , poder : ''};
+  isEdit: boolean = false;
+  indexEdit: number;
+
+  constructor(private _appService: AppService){}
+
+  ngOnInit(){
+    this.getAll();
+  }
+
+  getAll(){
+    this._appService.getAll().subscribe(data => {
+      this.personajes = data;
+    })
+
+  }
+
+  borrarFila(index: number){
     if (confirm("Realmente quiere borrarlo?")) {
-      this.datos.splice(cod, 1);
-      this.tabla1.renderRows();
-    }
-  }
-
-  agregar() {
-    if (this.articuloselect.codigo == 0) {
-      alert('Debe ingresar un código de personaje distinto a cero');
-      this.articuloselect = new Personaje(0, "", "");
-      return;
-    }
-
-    let articuloExistente = this.datos.find(a => a.codigo === this.articuloselect.codigo);
-
-    if (articuloExistente) {
-      // Actualizar nombre y el poder si el personaje ya existe
-      articuloExistente.nombre = this.articuloselect.nombre;
-      articuloExistente.poder = this.articuloselect.poder;
-      //this.tabla1.renderRows();
-      this.articuloselect = new Personaje(0, "", "");
-    } else {
-      this.datos.push(new Personaje(this.articuloselect.codigo, this.articuloselect.nombre, this.articuloselect.poder));
-      this.tabla1.renderRows();
-      this.articuloselect = new Personaje(0, "", "");
-    }
-
-  }
-
-  seleccionar(cod: number) {
-    
-    this.articuloselect.codigo = this.datos[cod].codigo;
-    this.articuloselect.nombre = this.datos[cod].nombre;
-    this.articuloselect.poder = this.datos[cod].poder;
-  }
-
-  modificar() {
-    for (let x = 0; x < this.datos.length; x++)
-      if (this.articuloselect.codigo == this.datos[x].codigo) {
-        this.articuloselect.nombre = this.datos[x].nombre;
-        this.articuloselect.poder = this.datos[x].poder;
+      const { id } = this.personajes[index];
+      if(!id){
+        alert('Personaje debe ser seleccionado');
         return;
       }
-    alert('No existe el código de personaje ingresado');
+      
+      this._appService.delete(id).subscribe({
+        next: (data) => {
+            const { value } = data;
+            this.personajes.splice(index, 1);
+            this.tabla1.renderRows();
+            this.reset()
+        },
+        error: (errorReponse) => {
+          alert('Ocurrio un error al elminar personaje');
+        }
+      })
+    }
   }
 
-}
+  seleccionar(index: number){
+    this.indexEdit = index;
+    this.isEdit = true;
+    this.personajeSelect = {...this.personajeSelect, ...this.personajes[index]}
+  }
 
-export class Personaje {
-  constructor(public codigo: number, public nombre: string, public poder: string) {
+  agregar(){
+    this._appService.insert(this.personajeSelect).subscribe({
+      next: (data) => {
+          const { value } = data;
+          this.personajes.push(value);
+          this.tabla1.renderRows();
+          this.reset()
+      },
+      error: (errorReponse) => {
+        alert('Ocurrio un error al agregar el nuevo personaje');
+      }
+    })
+  }
+
+  modificar(){
+    this._appService.update(this.personajeSelect).subscribe({
+      next: (data) => {
+        const { message, value } = data;
+        this.personajes[this.indexEdit] = value;
+        this.tabla1.renderRows();
+        this.reset();
+        alert(message)
+      },
+      error: (errorResponse) => {
+        console.log(errorResponse);
+        alert('Ocurrio un error al actualizar personaje');
+      }
+    })
+  }
+
+  reset(){
+    this.isEdit = false;
+    this.personajeSelect = { nombre : '' , poder : ''};
   }
 }
