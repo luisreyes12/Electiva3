@@ -26,4 +26,8 @@ export class AppService {
   delete(id : number){
     return this.httpClient.delete<any>(`${API_URL}/personaje/${id}`);
   }
+
+  download(){
+    return this.httpClient.get(`${API_URL}/personaje/descargar`, { responseType: 'blob' });
+  }
 }

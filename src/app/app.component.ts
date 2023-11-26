@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTable } from '@angular/material/table';
 import { Personaje } from './personaje';
 import { AppService } from './app.service';
+import { saveAs } from 'file-saver'
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,10 @@ import { AppService } from './app.service';
 export class AppComponent implements OnInit {
 
   @ViewChild(MatTable) tabla1!: MatTable<Personaje>;
-  columnas: string[] = ['id', 'nombre', 'poder', 'borrar', 'seleccionar'];
+  columnas: string[] = ['id', 'nombre', 'poder', 'pelicula', 'borrar', 'seleccionar'];
 
   personajes: Personaje[];
-  personajeSelect: Personaje = { nombre : '' , poder : ''};
+  personajeSelect: Personaje = { nombre : '' , poder : '', pelicula: ''};
   isEdit: boolean = false;
   indexEdit: number;
 
@@ -89,8 +90,13 @@ export class AppComponent implements OnInit {
     })
   }
 
+  descargar(){
+    const name = `reporte.pdf`;
+    this._appService.download().subscribe(blob => saveAs(blob, name));
+  }
+
   reset(){
     this.isEdit = false;
-    this.personajeSelect = { nombre : '' , poder : ''};
+    this.personajeSelect = { nombre : '' , poder : '', pelicula: ''};
   }
 }

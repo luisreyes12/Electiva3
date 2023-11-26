@@ -1,5 +1,6 @@
 export interface Personaje{
     id?:number,
     nombre: string,
-    poder: string
+    poder: string,
+    pelicula: string
 }
